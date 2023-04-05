@@ -1,8 +1,14 @@
 use rand::Rng;
 use rand::seq::SliceRandom;
 
-fn main() {
+mod dictionary;
+mod parser;
 
+
+fn main() {
+    dictionary::clear_dictionary();
+    
+    dictionary::create_dictionary();
 
     let lines = rand::thread_rng().gen_range(3..7);
     let mut i = 0;
@@ -11,8 +17,13 @@ fn main() {
         println!("{}", finite_state_machine());
         i += 1;
     }
+
+    if let Err(e) = parser::parse_file(){
+        eprintln!("{}", e);
+    }
     
 }
+
 
 fn finite_state_machine() -> String {
     let nouns = ["apple", "cow", "freedom", "glory", "hockey", "flower", "lo mein", "hamburger", "Canada", "France", "Pittsburgh"]; 
@@ -27,208 +38,208 @@ fn finite_state_machine() -> String {
     let transitive_verbs = ["needs", "has", "takes", "requests", "sees"];
 
     enum State {
-        Start_S,
-        Article_S,
-        Pronoun_S,
-        Noun_S,
-        Prep_S,
-        Adjec_S,
-        Indic_S,
-        Adverb_S,
-        Future_S,
-        Trans_S,
-        Conj_S,
-        Done_S   
+        StartS,
+        ArticleS,
+        PronounS,
+        NounS,
+        PrepS,
+        AdjecS,
+        IndicS,
+        AdverbS,
+        FutureS,
+        TransS,
+        ConjS,
+        DoneS   
     }
 
-    let mut state = State::Start_S;
+    let mut state = State::StartS;
 
     let mut line = String::new();
 
     loop {
         match state{
-            State::Start_S => {
+            State::StartS => {
                 let case = rand::thread_rng().gen_range(1..=4);
 
                 if case == 1{
-                    state = State::Article_S;
+                    state = State::ArticleS;
                 } else if case == 2{
-                    state = State::Pronoun_S;
+                    state = State::PronounS;
                 } else if case == 3{
-                    state = State::Noun_S;
+                    state = State::NounS;
                 } else if case == 4{
-                    state = State::Adjec_S;
+                    state = State::AdjecS;
                 }
             }
-            State::Article_S => {
+            State::ArticleS => {
                 let case = rand::thread_rng().gen_range(1..=2);
 
                 if case == 1{
                     line += adjectives.choose(&mut rand::thread_rng()).unwrap();
-                    state = State::Adjec_S;
+                    state = State::AdjecS;
                     
                 } else if case == 2{
                     line += nouns.choose(&mut rand::thread_rng()).unwrap();
-                    state = State::Noun_S;
+                    state = State::NounS;
                 } 
             }
-            State::Pronoun_S => {
+            State::PronounS => {
                 let case = rand::thread_rng().gen_range(1..=3);
 
                 if case == 1{
                     line += indicative_verbs.choose(&mut rand::thread_rng()).unwrap();
-                    state = State::Indic_S;
+                    state = State::IndicS;
                     
                 } else if case == 2{
                     line += transitive_verbs.choose(&mut rand::thread_rng()).unwrap();
-                    state = State::Trans_S;
+                    state = State::TransS;
 
                 } else if case == 3{
                     line += conjunctions.choose(&mut rand::thread_rng()).unwrap();
-                    state = State::Conj_S;
+                    state = State::ConjS;
 
                 } 
             }
-            State::Noun_S => {
+            State::NounS => {
                 let case = rand::thread_rng().gen_range(1..=6);
 
                 if case == 1{
                     line += indicative_verbs.choose(&mut rand::thread_rng()).unwrap();
-                    state = State::Indic_S;
+                    state = State::IndicS;
                     
                 } else if case == 2{
                     line += transitive_verbs.choose(&mut rand::thread_rng()).unwrap();
-                    state = State::Trans_S;
+                    state = State::TransS;
 
                 } else if case == 3{
                     line += conjunctions.choose(&mut rand::thread_rng()).unwrap();
-                    state = State::Conj_S;
+                    state = State::ConjS;
                     
                 }
                 else if case == 4{
                     line += adverbs.choose(&mut rand::thread_rng()).unwrap();
-                    state = State::Adverb_S;
+                    state = State::AdverbS;
 
                 } else if case == 5{
                     line += future.choose(&mut rand::thread_rng()).unwrap();
-                    state = State::Future_S;
+                    state = State::FutureS;
                 
                 } 
                 else if case == 6{
-                    state = State::Done_S;
+                    state = State::DoneS;
                 
                 }
             }
-            State::Prep_S => {
+            State::PrepS => {
                 let case = rand::thread_rng().gen_range(1..=3);
 
                 if case == 1{
                     line += articles.choose(&mut rand::thread_rng()).unwrap();
-                    state = State::Article_S;
+                    state = State::ArticleS;
                     
                 } else if case == 2{
                     line += pronouns.choose(&mut rand::thread_rng()).unwrap();
-                    state = State::Pronoun_S;
+                    state = State::PronounS;
 
                 } else if case == 3{
                     line += nouns.choose(&mut rand::thread_rng()).unwrap();
-                    state = State::Noun_S;
+                    state = State::NounS;
 
                 } 
             }
-            State::Adjec_S => {
+            State::AdjecS => {
                 let case = rand::thread_rng().gen_range(1..=2);
 
                 if case == 1{
                     line += adjectives.choose(&mut rand::thread_rng()).unwrap();
-                    state = State::Adjec_S;
+                    state = State::AdjecS;
                     
                 } else if case == 2{
                     line += nouns.choose(&mut rand::thread_rng()).unwrap();
-                    state = State::Noun_S;
+                    state = State::NounS;
                 } 
             }
-            State::Indic_S => {
+            State::IndicS => {
                 let case = rand::thread_rng().gen_range(1..=3);
 
                 if case == 1{
                     line += adverbs.choose(&mut rand::thread_rng()).unwrap();
-                    state = State::Adverb_S;
+                    state = State::AdverbS;
                     
                 } else if case == 2{
                     line += conjunctions.choose(&mut rand::thread_rng()).unwrap();
-                    state = State::Conj_S;
+                    state = State::ConjS;
 
                 } else if case == 3{
-                    state = State::Done_S;
+                    state = State::DoneS;
 
                 } 
             }
-            State::Adverb_S => {
+            State::AdverbS => {
                 let case = rand::thread_rng().gen_range(1..=5);
 
                 if case == 1{
                     line += conjunctions.choose(&mut rand::thread_rng()).unwrap();
-                    state = State::Conj_S;
+                    state = State::ConjS;
                     
                 } else if case == 2{
                     line += prepositions.choose(&mut rand::thread_rng()).unwrap();
-                    state = State::Prep_S;
+                    state = State::PrepS;
 
                 } else if case == 3{
                     line += transitive_verbs.choose(&mut rand::thread_rng()).unwrap();
-                    state = State::Trans_S;
+                    state = State::TransS;
                     
                 }
                 else if case == 4{
                     line += indicative_verbs.choose(&mut rand::thread_rng()).unwrap();
-                    state = State::Indic_S;
+                    state = State::IndicS;
 
                 } else if case == 5{
-                    state = State::Done_S;
+                    state = State::DoneS;
                 
                 } 
             }
-            State::Future_S => {
+            State::FutureS => {
                 let case = rand::thread_rng().gen_range(1..=2);
 
                 if case == 1{
                     line += indicative_verbs.choose(&mut rand::thread_rng()).unwrap();
-                    state = State::Indic_S;
+                    state = State::IndicS;
                     
                 } else if case == 2{
                     line += transitive_verbs.choose(&mut rand::thread_rng()).unwrap();
-                    state = State::Trans_S;
+                    state = State::TransS;
                 } 
             }
-            State::Conj_S => {
+            State::ConjS => {
                 let case = rand::thread_rng().gen_range(1..=2);
 
                 if case == 1{
                     line += nouns.choose(&mut rand::thread_rng()).unwrap();
-                    state = State::Noun_S;
+                    state = State::NounS;
                     
                 } else if case == 2{
                     line += pronouns.choose(&mut rand::thread_rng()).unwrap();
-                    state = State::Pronoun_S;
+                    state = State::PronounS;
                 } 
             }
-            State::Trans_S => {
+            State::TransS => {
                 let case = rand::thread_rng().gen_range(1..=3);
 
                 if case == 1{
                     line += articles.choose(&mut rand::thread_rng()).unwrap();
-                    state = State::Article_S;
+                    state = State::ArticleS;
                     
                 } else if case == 2{
                     line += pronouns.choose(&mut rand::thread_rng()).unwrap();
-                    state = State::Pronoun_S;
+                    state = State::PronounS;
                 } else if case == 3{
                     line += nouns.choose(&mut rand::thread_rng()).unwrap();
-                    state = State::Noun_S;
+                    state = State::NounS;
                 }
             }
-            State::Done_S => {
+            State::DoneS => {
                 break;
             }
 
