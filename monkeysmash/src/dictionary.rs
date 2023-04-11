@@ -1,24 +1,38 @@
+use crate::parser::Word;
+
 pub fn create_dictionary() {
     let connection = sqlite::open("dictionary.db").unwrap();
 
     let query = "
-        CREATE TABLE words (id INTEGER PRIMARY KEY, word TEXT, pos TEXT);
-    
-        INSERT INTO words (word, pos) VALUES ('test', 'noun');
+        CREATE TABLE nouns (id INTEGER PRIMARY KEY, word TEXT);
+        
+        CREATE TABLE adjectives (id INTEGER PRIMARY KEY, word TEXT);
+
+        CREATE TABLE adverbs (id INTEGER PRIMARY KEY, word TEXT);
+
+        CREATE TABLE prepositions (id INTEGER PRIMARY KEY, word TEXT;
+
+        CREATE TABLE transitive verbs (id INTEGER PRIMARY KEY, word TEXT);
+
+        CREATE TABLE plural nouns (id INTEGER PRIMARY KEY, word TEXT);
+
+        CREATE TABLE past participle (id INTEGER PRIMARY KEY, word TEXT);
+        
+
     ";
 
     connection.execute(query).unwrap();
 
 }
 
-pub fn fill_dictionary() {
+pub fn fill_dictionary(word: Word){
     let connection = sqlite::open("dictionary.db").unwrap();
 
-    let query = "
-    
-    
-    ";
+    let query = format!("
+        INSERT INTO words (word, pos) VALUES ('{}', '{}');
+    ", word.0, word.1);
 
+    println!("{}", query);
     connection.execute(query).unwrap();
 }
 

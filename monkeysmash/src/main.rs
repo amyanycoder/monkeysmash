@@ -7,8 +7,15 @@ mod parser;
 
 fn main() {
     dictionary::clear_dictionary();
-    
+
     dictionary::create_dictionary();
+
+    //fills database with words
+    if let Err(e) = parser::parse_file(){
+        eprintln!("{}", e);
+    }
+
+    //dictionary::clear_dictionary();
 
     let lines = rand::thread_rng().gen_range(3..7);
     let mut i = 0;
@@ -18,9 +25,7 @@ fn main() {
         i += 1;
     }
 
-    if let Err(e) = parser::parse_file(){
-        eprintln!("{}", e);
-    }
+
     
 }
 
