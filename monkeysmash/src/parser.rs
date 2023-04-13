@@ -34,7 +34,6 @@ pub fn parse_file() -> Result<(), Box<dyn Error>>{
 fn handle_filing(current_word: Word){
     println!("{:}", current_word);
 
-    //
 
     //logic tree determining word table based on part of speech
     //eliminates words with more than 10 characters

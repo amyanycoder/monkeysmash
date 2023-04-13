@@ -1,3 +1,5 @@
+use sqlite::{State, Row};
+
 use crate::parser::Word;
 
 pub fn create_dictionary() {
@@ -185,5 +187,23 @@ pub fn clear_dictionary() {
     ";
 
     connection.execute(query).unwrap(); 
+
+}
+
+pub fn pick_word(table: &str) -> String{
+    let mut random_word = String::from("");
+
+
+    let connection = sqlite::open("dictionary.db").unwrap();
+
+    let query = format!("SELECT word FROM {} ORDER BY random() LIMIT 1;", table);
+    let mut statement = connection.prepare(query).unwrap();
+    while let Ok(State::Row) = statement.next(){
+        random_word = statement.read::<String, _>("word").unwrap();
+
+ 
+    }
+
+    String::from(random_word.to_lowercase() + " ")
 
 }

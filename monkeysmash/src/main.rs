@@ -1,29 +1,38 @@
 use rand::Rng;
 use rand::seq::SliceRandom;
 
+use crate::dictionary::pick_word;
+
 mod dictionary;
 mod parser;
 
 
 fn main() {
-    dictionary::clear_dictionary();
+    //dictionary::clear_dictionary();
 
-    dictionary::create_dictionary();
+    //dictionary::create_dictionary();
 
     //fills database with words
-    if let Err(e) = parser::parse_file(){
-        eprintln!("{}", e);
-    }
+    //if let Err(e) = parser::parse_file(){
+    //    eprintln!("{}", e);
+    //}
 
     //dictionary::clear_dictionary();
 
-    let lines = rand::thread_rng().gen_range(3..7);
-    let mut i = 0;
 
+
+
+
+    let lines = rand::thread_rng().gen_range(3..7);
+
+    //makes poems for lines number of lines
+    let mut i = 0;
     while i <= lines{
         println!("{}", finite_state_machine());
         i += 1;
     }
+
+    println!("{}", pick_word("nouns"));
 
 
     
@@ -84,7 +93,6 @@ fn finite_state_machine() -> String {
                     state = State::AdjecS;
                     
                 } else if case == 2{
-                    line += nouns.choose(&mut rand::thread_rng()).unwrap();
                     state = State::NounS;
                 } 
             }
@@ -107,6 +115,7 @@ fn finite_state_machine() -> String {
             }
             State::NounS => {
                 let case = rand::thread_rng().gen_range(1..=6);
+                line += &pick_word("nouns");
 
                 if case == 1{
                     line += indicative_verbs.choose(&mut rand::thread_rng()).unwrap();
@@ -147,7 +156,6 @@ fn finite_state_machine() -> String {
                     state = State::PronounS;
 
                 } else if case == 3{
-                    line += nouns.choose(&mut rand::thread_rng()).unwrap();
                     state = State::NounS;
 
                 } 
@@ -160,7 +168,6 @@ fn finite_state_machine() -> String {
                     state = State::AdjecS;
                     
                 } else if case == 2{
-                    line += nouns.choose(&mut rand::thread_rng()).unwrap();
                     state = State::NounS;
                 } 
             }
@@ -221,7 +228,6 @@ fn finite_state_machine() -> String {
                 let case = rand::thread_rng().gen_range(1..=2);
 
                 if case == 1{
-                    line += nouns.choose(&mut rand::thread_rng()).unwrap();
                     state = State::NounS;
                     
                 } else if case == 2{
@@ -240,7 +246,6 @@ fn finite_state_machine() -> String {
                     line += pronouns.choose(&mut rand::thread_rng()).unwrap();
                     state = State::PronounS;
                 } else if case == 3{
-                    line += nouns.choose(&mut rand::thread_rng()).unwrap();
                     state = State::NounS;
                 }
             }
