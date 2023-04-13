@@ -161,8 +161,11 @@ pub fn fill_pronouns(word: Word){
     let connection = sqlite::open("dictionary.db").unwrap();
 
     let query = format!("
-        INSERT INTO pronouns (word) VALUES ('{}');
-    ", word.0);
+        INSERT INTO pronouns (word) VALUES ('I');
+        INSERT INTO pronouns (word) VALUES ('You');
+        INSERT INTO pronouns (word) VALUES ('We');
+        INSERT INTO pronouns (word) VALUES ('They');
+    ");
 
     println!("{}", query);
     connection.execute(query).unwrap();

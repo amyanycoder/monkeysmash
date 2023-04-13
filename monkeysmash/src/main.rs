@@ -1,5 +1,6 @@
 use rand::Rng;
 use rand::seq::SliceRandom;
+use std::env;
 
 use crate::dictionary::pick_word;
 
@@ -8,6 +9,16 @@ mod parser;
 
 
 fn main() {
+
+    let args: Vec<String> = env::args().collect();
+    let flag = &args[1];
+
+    match flag.as_str() {
+        "h" => println!("help"),
+        "b" => println!("build database"),
+        _ => println!("run program")
+
+    }
     //dictionary::clear_dictionary();
 
     //dictionary::create_dictionary();
