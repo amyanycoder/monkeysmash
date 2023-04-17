@@ -1,42 +1,31 @@
 use rand::Rng;
-use rand::seq::SliceRandom;
 use std::env;
-
-use crate::dictionary::pick_word;
+use crate::dictionary::{pick_word, build_database};
 
 mod dictionary;
 mod parser;
 
 
 fn main() {
-
     let args: Vec<String> = env::args().collect();
     let flag = &args[1];
 
-    match flag.as_str() {
-        "h" => println!("help"),
-        "b" => println!("build database"),
-        _ => println!("run program")
+    
+    match flag.as_str() {     
+        "b" => build_database(),
+        "r" => assemble_poem(),
+        "h" | "" => println!("help"), 
+        _ => println!("else")
 
     }
-    //dictionary::clear_dictionary();
+    
+}
 
-    //dictionary::create_dictionary();
-
-    //fills database with words
-    //if let Err(e) = parser::parse_file(){
-    //    eprintln!("{}", e);
-    //}
-
-    //dictionary::clear_dictionary();
-
-
-
-
-
+//assembles the poem by printing a random number of lines
+fn assemble_poem() {
     let lines = rand::thread_rng().gen_range(3..7);
 
-    //makes poems for lines number of lines
+    //makes poems of [lines] number of lines
     let mut i = 0;
     while i <= lines{
         println!("{}", finite_state_machine());
@@ -45,23 +34,11 @@ fn main() {
 
     println!("{}", pick_word("nouns"));
 
-
-    
 }
 
-
+//returns a single line of the poem
 fn finite_state_machine() -> String {
-    let nouns = ["apple", "cow", "freedom", "glory", "hockey", "flower", "lo mein", "hamburger", "Canada", "France", "Pittsburgh"]; 
-    let adjectives = ["Canadian", "purple", "green", "massive", "liberating", "topographical"];
-    let pronouns = ["he", "she", "it", "they", "I", "we", "you"];
-    let articles = ["a", "the"];
-    let conjunctions = ["for", "and", "nor", "but", "or", "yet", "so"];
-    let prepositions = ["in", "under", "of","towards", "before", "of", "for"];
-    let future = ["will", "is going to", "is to", "shall"];
-    let adverbs = ["quickly", "slowly", "carefully", "tonight", "yesterday", "here", "often"];
-    let indicative_verbs = ["is", "goes", "flies", "does", "eats"];
-    let transitive_verbs = ["needs", "has", "takes", "requests", "sees"];
-
+    //creates an object State to build the finite state machine.
     enum State {
         StartS,
         ArticleS,
@@ -81,6 +58,7 @@ fn finite_state_machine() -> String {
 
     let mut line = String::new();
 
+    //starting at start_s, moves to a state based off of its current state, finishing at Done_S.
     loop {
         match state{
             State::StartS => {
@@ -98,28 +76,25 @@ fn finite_state_machine() -> String {
             }
             State::ArticleS => {
                 let case = rand::thread_rng().gen_range(1..=2);
+                line += &pick_word("articles");
 
                 if case == 1{
-                    line += adjectives.choose(&mut rand::thread_rng()).unwrap();
-                    state = State::AdjecS;
-                    
+                    state = State::AdjecS; 
                 } else if case == 2{
                     state = State::NounS;
                 } 
             }
             State::PronounS => {
                 let case = rand::thread_rng().gen_range(1..=3);
+                line += &pick_word("pronouns");
 
                 if case == 1{
-                    line += indicative_verbs.choose(&mut rand::thread_rng()).unwrap();
                     state = State::IndicS;
                     
                 } else if case == 2{
-                    line += transitive_verbs.choose(&mut rand::thread_rng()).unwrap();
                     state = State::TransS;
 
                 } else if case == 3{
-                    line += conjunctions.choose(&mut rand::thread_rng()).unwrap();
                     state = State::ConjS;
 
                 } 
@@ -129,24 +104,19 @@ fn finite_state_machine() -> String {
                 line += &pick_word("nouns");
 
                 if case == 1{
-                    line += indicative_verbs.choose(&mut rand::thread_rng()).unwrap();
                     state = State::IndicS;
                     
                 } else if case == 2{
-                    line += transitive_verbs.choose(&mut rand::thread_rng()).unwrap();
                     state = State::TransS;
 
                 } else if case == 3{
-                    line += conjunctions.choose(&mut rand::thread_rng()).unwrap();
                     state = State::ConjS;
                     
                 }
                 else if case == 4{
-                    line += adverbs.choose(&mut rand::thread_rng()).unwrap();
                     state = State::AdverbS;
 
                 } else if case == 5{
-                    line += future.choose(&mut rand::thread_rng()).unwrap();
                     state = State::FutureS;
                 
                 } 
@@ -157,13 +127,12 @@ fn finite_state_machine() -> String {
             }
             State::PrepS => {
                 let case = rand::thread_rng().gen_range(1..=3);
+                line += &pick_word("prepositions");
 
                 if case == 1{
-                    line += articles.choose(&mut rand::thread_rng()).unwrap();
                     state = State::ArticleS;
                     
                 } else if case == 2{
-                    line += pronouns.choose(&mut rand::thread_rng()).unwrap();
                     state = State::PronounS;
 
                 } else if case == 3{
@@ -173,9 +142,9 @@ fn finite_state_machine() -> String {
             }
             State::AdjecS => {
                 let case = rand::thread_rng().gen_range(1..=2);
+                line += &pick_word("adjectives");
 
                 if case == 1{
-                    line += adjectives.choose(&mut rand::thread_rng()).unwrap();
                     state = State::AdjecS;
                     
                 } else if case == 2{
@@ -184,13 +153,12 @@ fn finite_state_machine() -> String {
             }
             State::IndicS => {
                 let case = rand::thread_rng().gen_range(1..=3);
+                line += &pick_word("indicative_verbs");
 
                 if case == 1{
-                    line += adverbs.choose(&mut rand::thread_rng()).unwrap();
                     state = State::AdverbS;
                     
                 } else if case == 2{
-                    line += conjunctions.choose(&mut rand::thread_rng()).unwrap();
                     state = State::ConjS;
 
                 } else if case == 3{
@@ -200,22 +168,19 @@ fn finite_state_machine() -> String {
             }
             State::AdverbS => {
                 let case = rand::thread_rng().gen_range(1..=5);
+                line += &pick_word("adverbs");
 
                 if case == 1{
-                    line += conjunctions.choose(&mut rand::thread_rng()).unwrap();
                     state = State::ConjS;
                     
                 } else if case == 2{
-                    line += prepositions.choose(&mut rand::thread_rng()).unwrap();
                     state = State::PrepS;
 
                 } else if case == 3{
-                    line += transitive_verbs.choose(&mut rand::thread_rng()).unwrap();
                     state = State::TransS;
                     
                 }
                 else if case == 4{
-                    line += indicative_verbs.choose(&mut rand::thread_rng()).unwrap();
                     state = State::IndicS;
 
                 } else if case == 5{
@@ -225,36 +190,34 @@ fn finite_state_machine() -> String {
             }
             State::FutureS => {
                 let case = rand::thread_rng().gen_range(1..=2);
+                line += &pick_word("future");
 
                 if case == 1{
-                    line += indicative_verbs.choose(&mut rand::thread_rng()).unwrap();
                     state = State::IndicS;
                     
                 } else if case == 2{
-                    line += transitive_verbs.choose(&mut rand::thread_rng()).unwrap();
                     state = State::TransS;
                 } 
             }
             State::ConjS => {
                 let case = rand::thread_rng().gen_range(1..=2);
+                line += &pick_word("conjunctions");
 
                 if case == 1{
                     state = State::NounS;
                     
                 } else if case == 2{
-                    line += pronouns.choose(&mut rand::thread_rng()).unwrap();
                     state = State::PronounS;
                 } 
             }
             State::TransS => {
                 let case = rand::thread_rng().gen_range(1..=3);
+                line += &pick_word("transitive_verbs");
 
                 if case == 1{
-                    line += articles.choose(&mut rand::thread_rng()).unwrap();
                     state = State::ArticleS;
                     
                 } else if case == 2{
-                    line += pronouns.choose(&mut rand::thread_rng()).unwrap();
                     state = State::PronounS;
                 } else if case == 3{
                     state = State::NounS;
@@ -265,7 +228,7 @@ fn finite_state_machine() -> String {
             }
 
         }
-    
+        //adds a space after the word
         line += " ";
     }
     line
