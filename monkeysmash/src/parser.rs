@@ -24,7 +24,7 @@ pub fn parse_file() -> Result<(), Box<dyn Error>>{
     for line in reader.records(){
         let value = line?;
 
-        let current_word = Word(String::from(value.get(0).unwrap()), String::from(value.get(1).unwrap()));
+        let current_word = Word(String::from(value.get(1).unwrap()), String::from(value.get(2).unwrap()));
 
         handle_filing(current_word);
     }
@@ -39,17 +39,15 @@ fn handle_filing(current_word: Word){
     //eliminates words with more than 10 characters
     //forbids words that do not contain these specific part of speech indicators.
     if current_word.0.chars().count() < 10
-    && (current_word.1.contains("pl.")
-        || current_word.1.contains("v. i.") 
-        || current_word.1.contains("n.")
-        || current_word.1.contains("a.")
-        || current_word.1.contains("adv.")
-        || current_word.1.contains("v. t.")
-        || current_word.1.contains("p. p.")
-        || current_word.1.contains("pr. p.")
-        || current_word.1.contains("prep.")
-        || current_word.1.contains("interj.")
-        || current_word.1.contains("conj."))    {
+    && (current_word.1.contains("Modal verb")
+        || current_word.1.contains("Noun") 
+        || current_word.1.contains("Adjective")
+        || current_word.1.contains("Adverb")
+        || current_word.1.contains("Verb")
+        || current_word.1.contains("Preposition")
+        || current_word.1.contains("Exclamation")
+        || current_word.1.contains("Conjunction")
+        || current_word.1.contains("Number"))    {
 
         insert_word(current_word);
 

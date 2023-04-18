@@ -14,7 +14,6 @@ pub fn build_database() {
     }
     //adds words not easily extracted from the csv
     insert_pronouns();
-    insert_future();
     insert_articles();
 }
 
@@ -32,7 +31,47 @@ pub fn pick_word(table: &str) -> String{
 
     }
 
-    String::from(random_word.to_lowercase())
+    String::from(random_word + " ")
+
+}
+
+//returns a single random word that starts with a consonant
+pub fn pick_consonant_word(table: &str) -> String{
+    let mut random_word = String::from("");
+
+    let connection = sqlite::open("dictionary.db").unwrap();
+    
+    //pulls word from database and assigns it to rust variable
+    let query = format!("SELECT word FROM {} WHERE word LIKE 'a%' OR word LIKE 'e%' 
+                                OR word LIKE 'i%' OR word LIKE 'o%' OR word LIKE 'u%' ORDER
+                                BY random() LIMIT 1;", table);
+    let mut statement = connection.prepare(query).unwrap();
+    while let Ok(State::Row) = statement.next(){
+        random_word = statement.read::<String, _>("word").unwrap();
+
+    }
+
+    String::from(random_word + " ")
+
+}
+
+//returns a single random word that starts with a vowel
+pub fn pick_vowel_word(table: &str) -> String{
+    let mut random_word = String::from("");
+
+    let connection = sqlite::open("dictionary.db").unwrap();
+    
+    //pulls word from database and assigns it to rust variable
+    let query = format!("SELECT word FROM {} WHERE NOT (word LIKE 'a%' OR word LIKE 'e%' 
+                                 OR word LIKE 'i%' OR word LIKE 'o%' OR word LIKE 'u%') ORDER
+                                BY random() LIMIT 1;", table);
+    let mut statement = connection.prepare(query).unwrap();
+    while let Ok(State::Row) = statement.next(){
+        random_word = statement.read::<String, _>("word").unwrap();
+
+    }
+
+    String::from(random_word + " ")
 
 }
 
@@ -49,23 +88,15 @@ fn create_dictionary() {
 
         CREATE TABLE prepositions (id INTEGER PRIMARY KEY, word TEXT);
 
-        CREATE TABLE transitive_verbs (id INTEGER PRIMARY KEY, word TEXT);
+        CREATE TABLE verbs (id INTEGER PRIMARY KEY, word TEXT);
 
-        CREATE TABLE plural_nouns (id INTEGER PRIMARY KEY, word TEXT);
-
-        CREATE TABLE past_participle (id INTEGER PRIMARY KEY, word TEXT);
-        
-        CREATE TABLE present_participle (id INTEGER PRIMARY KEY, word TEXT);
-
-        CREATE TABLE indicative_verbs (id INTEGER PRIMARY KEY, word TEXT);
-
-        CREATE TABLE interjections (id INTEGER PRIMARY KEY, word TEXT);
+        CREATE TABLE exclamations (id INTEGER PRIMARY KEY, word TEXT);
 
         CREATE TABLE conjunctions (id INTEGER PRIMARY KEY, word TEXT);
 
         CREATE TABLE pronouns (id INTEGER PRIMARY KEY, word TEXT);
 
-        CREATE TABLE future (id INTEGER PRIMARY KEY, word TEXT);
+        CREATE TABLE modal_verbs (id INTEGER PRIMARY KEY, word TEXT);
 
         CREATE TABLE articles (id INTEGER PRIMARY KEY, word TEXT);
 
@@ -81,37 +112,28 @@ pub fn insert_word(word: Word){
 
     let table: String;
 
-    if word.1.contains("pl."){
-        table = "plural_nouns".to_string();
+    if word.1.contains("Modal verb"){
+        table = "modal_verbs".to_string();
     }
-    else if word.1.contains("v. i."){
-        table = "indicative_verbs".to_string();
-    }
-    else if word.1.contains("n."){
+    else if word.1.contains("Noun") || word.1.contains("Number"){
         table = "nouns".to_string();
     }
-    else if word.1.contains("a."){
+    else if word.1.contains("Adjective"){
         table = "adjectives".to_string();
     }
-    else if word.1.contains("adv."){
+    else if word.1.contains("Adverb"){
         table = "adverbs".to_string();
     }
-    else if word.1.contains("v. t."){
-        table = "transitive_verbs".to_string();
+    else if word.1.contains("Verb"){
+        table = "verbs".to_string();
     }
-    else if word.1.contains("p. p."){
-        table = "past_participle".to_string();
-    }
-    else if word.1.contains("pr. p."){
-        table = "present_participle".to_string();
-    }
-    else if word.1.contains("prep."){
+    else if word.1.contains("Preposition"){
         table = "prepositions".to_string();
     }
-    else if word.1.contains("interj."){
-        table = "interjections".to_string();
+    else if word.1.contains("Exclamation"){
+        table = "exclamations".to_string();
     }
-    else if word.1.contains("conj."){
+    else if word.1.contains("Conjunction"){
         table = "conjunctions".to_string();
     }
     //should never be reached
@@ -134,37 +156,24 @@ fn insert_pronouns(){
 
     let query = format!("
         INSERT INTO pronouns (word) VALUES ('I');
-        INSERT INTO pronouns (word) VALUES ('You');
-        INSERT INTO pronouns (word) VALUES ('We');
-        INSERT INTO pronouns (word) VALUES ('They');
+        INSERT INTO pronouns (word) VALUES ('you');
+        INSERT INTO pronouns (word) VALUES ('we');
+        INSERT INTO pronouns (word) VALUES ('they');
     ");
 
     println!("{}", query);
     connection.execute(query).unwrap();
 }
 
-//inserts words and phrases that indicate a future tense, as the dictionary csv does not distinguish them.
-fn insert_future(){
-    let connection = sqlite::open("dictionary.db").unwrap();
-
-    let query = format!("
-        INSERT INTO future (word) VALUES ('Will');
-        INSERT INTO future (word) VALUES ('Shall');
-        INSERT INTO future (word) VALUES ('Will not');
-        INSERT INTO future (word) VALUES ('Shall not');
-    ");
-
-    println!("{}", query);
-    connection.execute(query).unwrap();
-}
 
 //inserts articles, as the dictionary does not distinguish them.
 fn insert_articles(){
     let connection = sqlite::open("dictionary.db").unwrap();
 
     let query = format!("
-        INSERT INTO articles (word) VALUES ('A');
-        INSERT INTO articles (word) VALUES ('The');
+        INSERT INTO articles (word) VALUES ('a');
+        INSERT INTO articles (word) VALUES ('the');
+        INSERT INTO articles (word) VALUES ('an');
 
     ");
 
@@ -181,15 +190,11 @@ fn clear_dictionary() {
         DROP TABLE adjectives;
         DROP TABLE adverbs;
         DROP TABLE conjunctions;
-        DROP TABLE indicative_verbs;
-        DROP TABLE interjections;
-        DROP TABLE past_participle;
-        DROP TABLE plural_nouns;
+        DROP TABLE verbs;
+        DROP TABLE exclamations;
         DROP TABLE prepositions;
-        DROP TABLE present_participle;
         DROP TABLE pronouns;
-        DROP TABLE transitive_verbs;
-        DROP TABLE future;
+        DROP TABLE modal_verbs;
         DROP TABLE articles;
     ";
 
