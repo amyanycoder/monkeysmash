@@ -1,0 +1,34 @@
+<!DOCTYPE html> 
+<html>
+<head>
+    <title>???</title>
+</head>
+<body>
+    <style>
+        body{
+            background-image: url('images/tileB.gif');
+        }
+        pre {
+            color: Cyan;
+            display: inline-block; 
+            background-color: #002233;
+            border:2px solid DarkBlue;
+            font-size: 15px;
+
+        }
+        div{
+            width: 30%;
+            margin: auto;
+            position: relative;
+            height: 100%;
+            top: 50%;
+            transform: translateY(200%);
+        }
+
+    </style>
+    <!-- The default text to be replaced by gen_poem_page() in main.rs -->
+    <div>
+        <pre>XXXXXXXXXXX</pre>
+    </div>
+</body>
+</html>

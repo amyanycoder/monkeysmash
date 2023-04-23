@@ -4,8 +4,8 @@ use crate::parser::Word;
 
 //builds the database
 pub fn build_database() {
+    //clears all tables
     clear_dictionary();
-
     create_dictionary();
 
     //fills database with words
@@ -25,46 +25,6 @@ pub fn pick_word(table: &str) -> String{
     
     //pulls word from database and assigns it to rust variable
     let query = format!("SELECT word FROM {} ORDER BY random() LIMIT 1;", table);
-    let mut statement = connection.prepare(query).unwrap();
-    while let Ok(State::Row) = statement.next(){
-        random_word = statement.read::<String, _>("word").unwrap();
-
-    }
-
-    String::from(random_word + " ")
-
-}
-
-//returns a single random word that starts with a consonant
-pub fn pick_consonant_word(table: &str) -> String{
-    let mut random_word = String::from("");
-
-    let connection = sqlite::open("dictionary.db").unwrap();
-    
-    //pulls word from database and assigns it to rust variable
-    let query = format!("SELECT word FROM {} WHERE word LIKE 'a%' OR word LIKE 'e%' 
-                                OR word LIKE 'i%' OR word LIKE 'o%' OR word LIKE 'u%' ORDER
-                                BY random() LIMIT 1;", table);
-    let mut statement = connection.prepare(query).unwrap();
-    while let Ok(State::Row) = statement.next(){
-        random_word = statement.read::<String, _>("word").unwrap();
-
-    }
-
-    String::from(random_word + " ")
-
-}
-
-//returns a single random word that starts with a vowel
-pub fn pick_vowel_word(table: &str) -> String{
-    let mut random_word = String::from("");
-
-    let connection = sqlite::open("dictionary.db").unwrap();
-    
-    //pulls word from database and assigns it to rust variable
-    let query = format!("SELECT word FROM {} WHERE NOT (word LIKE 'a%' OR word LIKE 'e%' 
-                                 OR word LIKE 'i%' OR word LIKE 'o%' OR word LIKE 'u%') ORDER
-                                BY random() LIMIT 1;", table);
     let mut statement = connection.prepare(query).unwrap();
     while let Ok(State::Row) = statement.next(){
         random_word = statement.read::<String, _>("word").unwrap();
@@ -112,6 +72,7 @@ pub fn insert_word(word: Word){
 
     let table: String;
 
+    //determines table to insert word to based on part of speech
     if word.1.contains("Modal verb"){
         table = "modal_verbs".to_string();
     }
@@ -141,7 +102,7 @@ pub fn insert_word(word: Word){
         table = "".to_string();
     }
 
-    //SQL query to insert word to database based on part of speech
+    //SQL query to insert word to database
     let query = format!("
         INSERT INTO {} (word) VALUES ('{}');
     ", table.as_str(), word.0);
@@ -150,7 +111,7 @@ pub fn insert_word(word: Word){
     connection.execute(query).unwrap();
 }
 
-//inserts pronouns, as the dictionary csv does not distinguish pronouns.
+//inserts pronouns, as the pronouns in the csv do not fit the program's needs.
 fn insert_pronouns(){
     let connection = sqlite::open("dictionary.db").unwrap();
 
@@ -166,15 +127,13 @@ fn insert_pronouns(){
 }
 
 
-//inserts articles, as the dictionary does not distinguish them.
+//inserts articles, as the csv does not distinguish them.
 fn insert_articles(){
     let connection = sqlite::open("dictionary.db").unwrap();
 
     let query = format!("
         INSERT INTO articles (word) VALUES ('a');
         INSERT INTO articles (word) VALUES ('the');
-        INSERT INTO articles (word) VALUES ('an');
-
     ");
 
     println!("{}", query);

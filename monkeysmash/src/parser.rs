@@ -24,6 +24,7 @@ pub fn parse_file() -> Result<(), Box<dyn Error>>{
     for line in reader.records(){
         let value = line?;
 
+        //current_word is defined by the word, followed by the part of speech.
         let current_word = Word(String::from(value.get(1).unwrap()), String::from(value.get(2).unwrap()));
 
         handle_filing(current_word);
